@@ -23,11 +23,12 @@ class AuthController {
     const existingUser = await dbClient.db.collection('users').findOne({ email, password: hashedPassword });
     if (!existingUser) {
       response.status(401).json({ error: 'Unauthorized' });
+      return;
     }
     const token = uuidv4();
     const key = `auth_<${token}>}`;
     redisClient.set(key, existingUser._id.toString(), 86400);
-    return response.status(200).json({ token });
+    response.status(200).json({ token });
   }
   // getDisconnect
   // getme
