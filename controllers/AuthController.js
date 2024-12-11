@@ -30,7 +30,18 @@ class AuthController {
     redisClient.set(key, existingUser._id.toString(), 86400);
     response.status(200).json({ token });
   }
-  // getDisconnect
+
+  static async getDisconnect(request, response) {
+    const xToken = request.headers['x-token'];
+    const user = await redisClient.get(`auth_<${xToken}>}`);
+
+    if (!user) {
+      response.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    await redisClient.del(`auth_<${xToken}>}`);
+    response.status(204).send();
+  }
   // getme
 }
 module.exports = AuthController;
