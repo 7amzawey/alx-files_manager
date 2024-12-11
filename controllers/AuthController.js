@@ -53,11 +53,7 @@ class AuthController {
       return;
     }
     const user = await dbClient.db.collection('users').findOne({ _id: new ObjectId(userID) }, { projection: { email: 1 } });
-    if (user) {
-      response.status(200).json({ id: user._id, email: user.email });
-    } else {
-      response.status(404).json({ error: 'User not found' });
-    }
+    response.status(200).json({ id: user._id, email: user.email });
   }
 }
 module.exports = AuthController;
