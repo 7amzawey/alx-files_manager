@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 const crypto = require('crypto');
+const { v4: uuidv4 } = require('uuid');
 const redisClient = require('../utils/redis');
 const dbClient = require('../utils/db');
 
@@ -23,9 +24,10 @@ class AuthController {
     if (!existingUser) {
       response.status(401).json({ error: 'Unauthorized' });
     }
-    const key = `auth_<${uuidv4()}>}`;
+    const token = uuidv4();
+    const key = `auth_<${token}>}`;
     redisClient.set(key, existingUser._id.toString(), 86400);
-    return response.status(200).json({ token })
+    return response.status(200).json({ token });
   }
   // getDisconnect
   // getme
