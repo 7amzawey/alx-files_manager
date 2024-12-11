@@ -10,9 +10,9 @@ class AuthController {
             return
         } */
 
-    const token = authHeader.split(' ')[1];
+    const AuthToken = authHeader.split(' ')[1];
 
-    const bufferObj = Buffer.from(token, 'base64');
+    const bufferObj = Buffer.from(AuthToken, 'base64');
 
     const decodedString = bufferObj.toString('utf8'); // bob@dylan.com:toto1234!
 
@@ -23,7 +23,9 @@ class AuthController {
     if (!existingUser) {
       response.status(401).json({ error: 'Unauthorized' });
     }
-    /////
+    const key = `auth_<${uuidv4()}>}`;
+    redisClient.set(key, existingUser._id.toString(), 86400);
+    return response.status(200).json({ token })
   }
   // getDisconnect
   // getme
