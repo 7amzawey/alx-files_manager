@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 const crypto = require('crypto');
+const { ObjectId } = require('mongodb');
 const { v4: uuidv4 } = require('uuid');
 const redisClient = require('../utils/redis');
 const dbClient = require('../utils/db');
@@ -42,6 +43,21 @@ class AuthController {
     await redisClient.del(`auth_<${xToken}>}`);
     response.status(204).send();
   }
-  // getme
+
+  static async getMe(request, response) {
+    const xToken = request.headers['x-token'];
+    const userID = await redisClient.get(`auth_<${xToken}>}`);
+
+    if (!userID) {
+      response.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const user = await dbClient.db.collection('users').findOne({ _id: new ObjectId(userID) }, { projection: { email: 1 } });
+    if (user) {
+      response.status(200).json({ id: user._id, email: user.email });
+    } else {
+      response.status(404).json({ error: 'User not found' });
+    }
+  }
 }
 module.exports = AuthController;

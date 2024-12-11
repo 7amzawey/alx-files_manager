@@ -11,5 +11,5 @@ router.post('/users', UsersController.postNew);
 
 router.get('/connect', AuthController.getConnect);
 router.get('/disconnect', AuthController.getDisconnect);
-// router.get('/users/me', AppController.getStatus);
+router.get('/users/me', AuthController.getMe);
 module.exports = router;
