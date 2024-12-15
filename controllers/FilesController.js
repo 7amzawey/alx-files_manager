@@ -51,21 +51,21 @@ class FilesController {
       parentId,
     };
 
-    if (type === 'folder') {
-      const result = await dbClient.db.collection('files').insertOne(fileDocument);
-      return res.status(201).json(result.ops[0]);
-    }
-
     const folderPath = process.env.FOLDER_PATH || '/tmp/files_manager';
     if (!fs.existsSync(folderPath)) {
       fs.mkdirSync(folderPath, { recursive: true });
     }
 
+    if (type === 'folder') {
+      const localPath = path.join(folderPath, uuidv4());
+      fs.writeFileSync(localPath, Buffer.from(data, 'base64'));
+      fileDocument.localPath = localPath;
+      const result = await dbClient.db.collection('files').insertOne(fileDocument);
+      return res.status(201).json(result.ops[0]);
+    }
     const localPath = path.join(folderPath, uuidv4());
     fs.writeFileSync(localPath, Buffer.from(data, 'base64'));
-
     fileDocument.localPath = localPath;
-
     const result = await dbClient.db.collection('files').insertOne(fileDocument);
     return res.status(201).json(result.ops[0]);
   }
