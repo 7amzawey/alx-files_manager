@@ -33,7 +33,8 @@ class FilesController {
     }
 
     if (parentId !== 0) {
-      const parentFile = await dbClient.collection('files').findOne({ _id: parentId });
+      const parentFile = await dbClient.db.collection('files').findOne({ _id: parentId });
+      console.log(parentFile);
       if (!parentFile) {
         return res.status(400).json({ error: 'Parent not found' });
       }
@@ -51,7 +52,7 @@ class FilesController {
     };
 
     if (type === 'folder') {
-      const result = await dbClient.collection('files').insertOne(fileDocument);
+      const result = await dbClient.db.collection('files').insertOne(fileDocument);
       return res.status(201).json(result.ops[0]);
     }
 
@@ -65,7 +66,7 @@ class FilesController {
 
     fileDocument.localPath = localPath;
 
-    const result = await dbClient.collection('files').insertOne(fileDocument);
+    const result = await dbClient.db.collection('files').insertOne(fileDocument);
     return res.status(201).json(result.ops[0]);
   }
 }
